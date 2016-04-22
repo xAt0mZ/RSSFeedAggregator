@@ -4,6 +4,7 @@ API for Epitech project "RSS Feed Aggregator"
 This project is running on Tomcat8 server, with mongo as database
 
 How to install and run API with docker :
+
 1. Install docker (see docker documentation to get install tutorial without )
 
 2. Create mongo container with following command : [docker run --name MONGO_CONTAINER_NAME -v PATH_TO_FOLDER_DB_SAVE:/data/db -d -p 27017:27017 mongo]
@@ -17,9 +18,11 @@ How to install and run API with docker :
 6. Go on url : [http://localhost:EXTERNAL_PORT] , login with previous id/password and install API .war
 
 7. Go on url : [http://localhost:EXTERNAL_PORT/rssaggregator]
+
 If you see "Jersey RESTful API is running" message, your API is successfully installed and running
 
 8. Go on url : [http://localhost:EXTERNAL_PORT/rssaggregator/api/users]
+
 If you see a simple "[]" message, your tomcat container is successfully linked with your mongo container
 
 
