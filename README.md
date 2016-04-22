@@ -19,7 +19,7 @@ How to install and run API with docker :
 7. Go on url : [http://localhost:EXTERNAL_PORT/rssaggregator]
 If you see "Jersey RESTful API is running" message, your API is successfully installed and running
 
-8 Go on url : [http://localhost:EXTERNAL_PORT/rssaggregator/api/users]
+8. Go on url : [http://localhost:EXTERNAL_PORT/rssaggregator/api/users]
 If you see a simple "[]" message, your tomcat container is successfully linked with your mongo container
 
 
