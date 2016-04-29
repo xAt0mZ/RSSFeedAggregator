@@ -19,7 +19,7 @@ public final class MorphiaHelper {
 	}
 
 	private MorphiaHelper() {
-		MongoClient mongoClient = new MongoClient("rss_mongo");
+		MongoClient mongoClient = new MongoClient();
 		this.morphia = new Morphia();
 		String databaseName = "rss_feed_aggregator";
 		this.datastore = morphia.createDatastore(mongoClient, databaseName);

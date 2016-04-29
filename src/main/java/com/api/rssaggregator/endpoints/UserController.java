@@ -1,56 +1,84 @@
 package com.api.rssaggregator.endpoints;
 
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.api.rssaggregator.annotations.Authenticated;
 import com.api.rssaggregator.entities.User;
 import com.api.rssaggregator.helpers.DAOHelper;
 
-@Path("users")
+@Path("user")
 public class UserController {
+	@Context
+	HttpServletRequest request;
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> get() {
-		return DAOHelper.userDAO.find().asList();
-	}
+	private static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile(
+			"^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
+			Pattern.CASE_INSENSITIVE);
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("{id}")
-	public User getById(@PathParam("id") String id) {
-		return DAOHelper.userDAO.createQuery().filter("id =", id).get();
+	private static boolean validateEmail(String emailStr) {
+		Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+		return matcher.find();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response create(User entity) {
-		DAOHelper.userDAO.save(entity);
-		return Response.status(201).build();
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("login")
+	@Authenticated
+	public User get(User u) {
+		User user = DAOHelper.userDAO.createQuery().filter("email =", u.email)
+				.filter("password =", u.password).get();
+		if (user == null)
+			throw new WebApplicationException(Response
+					.status(Response.Status.BAD_REQUEST).build());
+		HttpSession session = request.getSession();
+		session.setAttribute("user", user);
+		return user;
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("register")
+	@Authenticated
+	public User create(User user) {
+		if (user.email == null || user.email.isEmpty()
+				|| !validateEmail(user.email) || user.password == null
+				|| user.password.isEmpty())
+			throw new WebApplicationException(Response
+					.status(Response.Status.BAD_REQUEST).build());
+		if (DAOHelper.userDAO.createQuery().filter("email =", user.email).filter("password =", user.password).get() != null)
+			throw new WebApplicationException(Response
+					.status(Response.Status.BAD_REQUEST).build());
+		DAOHelper.userDAO.save(user);
+		HttpSession session = request.getSession();
+		session.setAttribute("user", user);
+		return user;
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response update(User entity) {
-		DAOHelper.userDAO.save(entity);
-		return Response.status(201).build();
+	@Produces(MediaType.APPLICATION_JSON)
+	@Authenticated
+	public User update(User user) {
+		DAOHelper.userDAO.save(user);
+		HttpSession session = request.getSession();
+		session.setAttribute("user", user);
+		return user;
 	}
-
-	@DELETE
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response delete(User entity) {
-		DAOHelper.userDAO.delete(entity);
-		return Response.status(201).build();
-	}
-
 }
