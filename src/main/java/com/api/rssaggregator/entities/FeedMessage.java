@@ -1,6 +1,5 @@
 package com.api.rssaggregator.entities;
 
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Transient;
@@ -9,8 +8,8 @@ import org.mongodb.morphia.annotations.Transient;
 public class FeedMessage {
 
 	@Id
-	public String id = ObjectId.get().toString();
 	public String url;
+	public boolean isRead = false;
 	@Transient
 	public String title;
 	@Transient
@@ -19,6 +18,6 @@ public class FeedMessage {
 	public String author;
 	@Transient
 	public String guid;
-	public boolean isRead = false;
+	
 
 }

@@ -4,13 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -46,8 +43,7 @@ public class UserController {
 		if (user == null)
 			throw new WebApplicationException(Response
 					.status(Response.Status.BAD_REQUEST).build());
-		HttpSession session = request.getSession();
-		session.setAttribute("user", user);
+		request.getSession().setAttribute("user", user.email);
 		return user;
 	}
 
@@ -62,12 +58,11 @@ public class UserController {
 				|| user.password.isEmpty())
 			throw new WebApplicationException(Response
 					.status(Response.Status.BAD_REQUEST).build());
-		if (DAOHelper.userDAO.createQuery().filter("email =", user.email).filter("password =", user.password).get() != null)
+		if (DAOHelper.userDAO.createQuery().filter("email =", user.email).get() != null)
 			throw new WebApplicationException(Response
 					.status(Response.Status.BAD_REQUEST).build());
 		DAOHelper.userDAO.save(user);
-		HttpSession session = request.getSession();
-		session.setAttribute("user", user);
+		request.getSession().setAttribute("user", user.email);
 		return user;
 	}
 
@@ -77,8 +72,6 @@ public class UserController {
 	@Authenticated
 	public User update(User user) {
 		DAOHelper.userDAO.save(user);
-		HttpSession session = request.getSession();
-		session.setAttribute("user", user);
 		return user;
 	}
 }

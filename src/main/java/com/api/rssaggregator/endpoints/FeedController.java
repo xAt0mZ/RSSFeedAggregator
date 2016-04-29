@@ -3,7 +3,6 @@ package com.api.rssaggregator.endpoints;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,7 +26,7 @@ public class FeedController {
 
 	private FeedMessage findByUrl(List<FeedMessage> list, String url) {
 		for (FeedMessage message : list) {
-			if (message.url == url)
+			if (message.url.equals(url))
 				return message;
 		}
 		return null;
@@ -36,29 +35,26 @@ public class FeedController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Authenticated
-	public List<Folder> get() {
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
-		List<Feed> tmpList;
-		RSSFeedParser parser;
-		Feed tmpFeed;
-		FeedMessage tmpMessage;
+	public User get() {
+		String email = (String) request.getSession().getAttribute("user");
+		User user = DAOHelper.userDAO.createQuery().filter("email =", email)
+				.get();
 		for (Folder folder : user.folders) {
-			tmpList = Lists.newArrayList();
-			for (Feed feed : folder.feeds) {
-				parser = new RSSFeedParser(feed.url);
-				tmpFeed = parser.readFeed();
-				for (FeedMessage message : tmpFeed.messages) {
-					tmpMessage = findByUrl(feed.messages, message.url);
-					if (tmpMessage != null)
-						message.isRead = tmpMessage.isRead;
+			List<Feed> newList = Lists.newArrayList();
+			for (Feed oldFeed : folder.feeds) {
+				RSSFeedParser parser = new RSSFeedParser(oldFeed.url);
+				Feed newFeed = parser.readFeed();
+				for (FeedMessage newMessage : newFeed.messages) {
+					FeedMessage oldMessage = findByUrl(oldFeed.messages,
+							newMessage.url);
+					if (oldMessage != null)
+						newMessage.isRead = oldMessage.isRead;
 				}
-				tmpList.add(tmpFeed);
+				newList.add(newFeed);
 			}
-			folder.feeds = tmpList;
+			folder.feeds = newList;
 		}
-		session.setAttribute("user", user);
 		DAOHelper.userDAO.save(user);
-		return user.folders;
+		return user;
 	}
 }

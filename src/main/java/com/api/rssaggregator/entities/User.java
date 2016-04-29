@@ -11,8 +11,6 @@ import org.mongodb.morphia.annotations.Id;
 @Entity
 public class User {
 
-	
-	//public String id = ObjectId.get().toString();
 	@Id
 	public String email;
 	public String password;
