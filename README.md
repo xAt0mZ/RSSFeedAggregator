@@ -29,3 +29,13 @@ Notes :
 * EXTERNAL_PORT		: is the port you will use to access tomcat in urls
 
 I recommend using "tutum/tomcat" docker image (latest is Tomcat8 while writing this README) instead of official "tomcat" docker image because "tutum/tomcat" image launches with a generated admin account (id + password) while official "tomcat" image yet doesn't have an easy way to setup accounts
+
+
+______________________________________
+
+API Use exemple :
+
+POST :: localhost:8080/rssaggregator/api/users/register
+POST :: localhost:8080/rssaggregator/api/users/login
+PUT :: localhost:8080/rssaggregator/api/users
+GET :: localhost:8080/rssaggregator/api/feeds
