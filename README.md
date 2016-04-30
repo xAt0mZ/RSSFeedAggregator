@@ -1,4 +1,4 @@
-# RSSFeedAggregator
+# RSSFeedAggregatorAPI
 
 API for Epitech project "RSS Feed Aggregator"
 This project is running on Tomcat8 server, with mongo as database
@@ -31,11 +31,11 @@ Notes :
 I recommend using "tutum/tomcat" docker image (latest is Tomcat8 while writing this README) instead of official "tomcat" docker image because "tutum/tomcat" image launches with a generated admin account (id + password) while official "tomcat" image yet doesn't have an easy way to setup accounts
 
 
-______________________________________
+__________________________________
 
-API Use exemple :
+API Available requests :
 
-POST :: localhost:8080/rssaggregator/api/users/register
-POST :: localhost:8080/rssaggregator/api/users/login
-PUT :: localhost:8080/rssaggregator/api/users
-GET :: localhost:8080/rssaggregator/api/feeds
+* POST :: localhost:8080/rssaggregator/api/user/register
+* POST :: localhost:8080/rssaggregator/api/user/login
+* PUT :: localhost:8080/rssaggregator/api/user
+* GET :: localhost:8080/rssaggregator/api/feeds
