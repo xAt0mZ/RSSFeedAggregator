@@ -1,6 +1,8 @@
 package com.api.rssaggregator.filters;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -18,16 +20,26 @@ public class AuthenticatedFilter implements ContainerRequestFilter {
 	@Context
 	HttpServletRequest request;
 
+	public static Map<String, HttpSession> sessions = new HashMap<String, HttpSession>();
+
 	@Override
 	public void filter(ContainerRequestContext requestContext)
 			throws IOException {
-		HttpSession session = request.getSession();
+		String token = request.getParameter("JSESSIONID");
+		HttpSession session;
+		if (token == null || token.isEmpty()) {
+			session = request.getSession();
+			sessions.put(session.getId(), session);
+		} else
+			session = sessions.get(token);
 		String path = request.getRequestURI().substring(
 				request.getContextPath().length());
 		if (!path.endsWith("/login") && !path.endsWith("/register")) {
-			if (session.getAttribute("user") == null)
+			if (session.getAttribute("user") == null) {
+				sessions.remove(session.getId());
 				requestContext.abortWith(Response.status(
 						Response.Status.UNAUTHORIZED).build());
+			}
 		}
 	}
 }

@@ -3,6 +3,7 @@ package com.api.rssaggregator.endpoints;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -16,6 +17,7 @@ import com.api.rssaggregator.entities.Feed;
 import com.api.rssaggregator.entities.FeedMessage;
 import com.api.rssaggregator.entities.Folder;
 import com.api.rssaggregator.entities.User;
+import com.api.rssaggregator.filters.AuthenticatedFilter;
 import com.api.rssaggregator.helpers.DAOHelper;
 import com.api.rssaggregator.helpers.RSSFeedParser;
 
@@ -36,7 +38,13 @@ public class FeedController {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Authenticated
 	public User get() {
-		String email = (String) request.getSession().getAttribute("user");
+		String token = request.getParameter("JSESSIONID");
+		HttpSession session;
+		if (token == null || token.isEmpty()) {
+			session = request.getSession();
+		} else
+			session = AuthenticatedFilter.sessions.get(token);
+		String email = (String) session.getAttribute("user");
 		User user = DAOHelper.userDAO.createQuery().filter("email =", email)
 				.get();
 		for (Folder folder : user.folders) {
