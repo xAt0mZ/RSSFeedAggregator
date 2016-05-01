@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.api.rssaggregator.annotations.Authenticated;
+import com.api.rssaggregator.entities.Folder;
 import com.api.rssaggregator.entities.User;
 import com.api.rssaggregator.helpers.DAOHelper;
 
@@ -65,6 +66,9 @@ public class UserController {
 		if (DAOHelper.userDAO.createQuery().filter("email =", user.email).get() != null)
 			throw new WebApplicationException(Response.status(
 					Response.Status.BAD_REQUEST).build());
+		Folder f = new Folder();
+		f.title = "General";
+		user.folders.add(f);
 		DAOHelper.userDAO.save(user);
 		request.getSession().setAttribute("user", user.email);
 		return user;
