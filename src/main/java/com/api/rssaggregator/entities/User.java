@@ -16,9 +16,13 @@ public class User {
 	public String password;
 
 	@Embedded
-	public List<Folder> folders = Lists.newArrayList();
+	public List<Folder> folders;
 
 	public User() {
+		folders = Lists.newArrayList();
+		Folder f = new Folder();
+		f.title = "General";
+		folders.add(f);
 	}
 
 }

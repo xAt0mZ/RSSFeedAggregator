@@ -38,11 +38,15 @@ public class UserController {
 	@Path("login")
 	@Authenticated
 	public User get(User u) {
+		if (u.email == null || u.email.isEmpty() || u.password == null
+				|| u.password.isEmpty())
+			throw new WebApplicationException(Response.status(
+					Response.Status.BAD_REQUEST).build());
 		User user = DAOHelper.userDAO.createQuery().filter("email =", u.email)
 				.filter("password =", u.password).get();
 		if (user == null)
-			throw new WebApplicationException(Response
-					.status(Response.Status.BAD_REQUEST).build());
+			throw new WebApplicationException(Response.status(
+					Response.Status.BAD_REQUEST).build());
 		request.getSession().setAttribute("user", user.email);
 		return user;
 	}
@@ -56,11 +60,11 @@ public class UserController {
 		if (user.email == null || user.email.isEmpty()
 				|| !validateEmail(user.email) || user.password == null
 				|| user.password.isEmpty())
-			throw new WebApplicationException(Response
-					.status(Response.Status.BAD_REQUEST).build());
+			throw new WebApplicationException(Response.status(
+					Response.Status.BAD_REQUEST).build());
 		if (DAOHelper.userDAO.createQuery().filter("email =", user.email).get() != null)
-			throw new WebApplicationException(Response
-					.status(Response.Status.BAD_REQUEST).build());
+			throw new WebApplicationException(Response.status(
+					Response.Status.BAD_REQUEST).build());
 		DAOHelper.userDAO.save(user);
 		request.getSession().setAttribute("user", user.email);
 		return user;
